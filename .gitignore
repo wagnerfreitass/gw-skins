@@ -1,0 +1,21 @@
+# Ignore node_modules em backend e frontend
+**/node_modules/
+
+# Logs
+*.log
+
+# Ambiente
+.env
+.env.local
+
+# Angular build output
+/frontend/dist/
+/frontend/.angular/
+
+# IDEs e sistema
+.vscode/
+.DS_Store
+Thumbs.db
+
+# Outros arquivos de build
+/backend/build/
