@@ -197,6 +197,37 @@ app.post('/usuarios/tradeurl', async (req, res) => {
 const setupAuth = require('./auth');
 setupAuth(app);
 
+// Importar manager do bot
+const { manager } = require('./bot');
+
+// Enviar skin via trade offer
+app.post('/enviar-skin', async (req, res) => {
+  const { steam_id_destino, mensagem, items } = req.body;
+
+  if (!steam_id_destino || !items || !Array.isArray(items) || items.length === 0) {
+    return res.status(400).json({ message: 'Parâmetros inválidos. Informe steam_id_destino e items (array).' });
+  }
+
+  try {
+    const offer = manager.createOffer(steam_id_destino);
+    offer.addMyItems(items); // items = [{ appid, contextid, assetid }]
+    offer.setMessage(mensagem || 'Aqui está sua skin da GW Skins 🎁');
+
+    offer.send((err, status) => {
+      if (err) {
+        console.error('Erro ao enviar oferta:', err);
+        return res.status(500).json({ message: 'Erro ao enviar trade offer' });
+      }
+
+      console.log('Oferta enviada! Status:', status);
+      return res.status(200).json({ message: 'Oferta enviada com sucesso', status });
+    });
+  } catch (err) {
+    console.error('Erro inesperado ao enviar skin:', err);
+    return res.status(500).json({ message: 'Erro interno ao enviar skin' });
+  }
+});
+
 // Iniciar servidor
 const PORT = 3000;
 app.listen(PORT, () => {
